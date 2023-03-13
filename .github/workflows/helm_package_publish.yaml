@@ -3,6 +3,9 @@ name: Build and publish a Helm chart (located in /helm folder) into the GitHub C
 
 on:
   workflow_call: {}
+  push:
+    branches:
+      - feature/#116
 
 
 jobs:

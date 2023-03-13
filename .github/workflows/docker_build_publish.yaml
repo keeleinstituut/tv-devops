@@ -3,6 +3,9 @@ name: Build and publish a Docker image (based on /Dockerfile) into the GitHub Co
 
 on:
   workflow_call: {}
+  push:
+    branches:
+      - feature/#116
 
 
 jobs:
