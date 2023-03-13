@@ -1,0 +1,48 @@
+name: Build and publish a Helm chart (located in /helm folder) into the GitHub Container Registry
+
+
+on:
+  workflow_call: {}
+
+
+jobs:
+  helm-upgrade:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install Helm in container
+        uses: Azure/setup-helm@v3
+        with:
+          version: v3.11.1
+
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Replace placeholders in "values.yaml" and "Chart.yaml"
+        run: |
+          sed -i \
+          -e s~__GIT_COMMIT_SHA__~${{ github.sha }}~ \
+          -e s~__IMAGE_NAME__~${{ github.repository }}~ \
+          helm/values.yaml helm/Chart.yaml
+
+      - name: Login to GHCR using Helm
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | \
+          helm registry login -u ghcr.io --password-stdin ghcr.io
+
+      - name: Package Helm chart and save command output
+        run: |
+          echo helm_package_output=\
+          $(helm package --dependency-update helm) \
+          >> $GITHUB_ENV
+
+      - name: Parse Helm package filename and save it
+        run: |
+          echo helm_package_file=\
+          $(echo ${{ env.helm_package_output }} | egrep -o '\b\S+\.tgz\b') \
+          >> $GITHUB_ENV
+
+
+      - name: Publish Helm chart to GHCR
+        run: |
+          helm push ${{ env.helm_package_file }} oci://ghcr.io/${{ github.repository_owner }}
