@@ -2,7 +2,14 @@ name: Build and publish a Helm chart (located in /helm folder) into the GitHub C
 
 
 on:
-  workflow_call: {}
+  workflow_call:
+    inputs:
+      image_repository:
+        required: true
+        type: string
+      commit_sha:
+        required: true
+        type: string
   push:
     branches:
       - feature/#116
@@ -24,8 +31,8 @@ jobs:
       - name: Replace placeholders in "values.yaml" and "Chart.yaml"
         run: |
           sed -i \
-          -e s~__GIT_COMMIT_SHA__~${{ github.sha }}~ \
-          -e s~__IMAGE_NAME__~${{ github.repository }}~ \
+          -e s~__GIT_COMMIT_SHA__~${{ inputs.commit_sha }}~ \
+          -e s~__IMAGE_REPOSITORY__~${{ inputs.image_repository }}~ \
           helm/values.yaml helm/Chart.yaml
 
       - name: Login to GHCR using Helm
