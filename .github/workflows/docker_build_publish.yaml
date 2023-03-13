@@ -20,6 +20,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Build label metadata
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          labels: |
+            org.opencontainers.image.description=Docker image ${{ inputs.image_repository}} built from commit SHA ${{ inputs.commit_sha }}.
+            org.opencontainers.image.title=Docker image (${{ inputs.image_repository}}:${{ inputs.commit_sha }}).
+
       - name: Setup Docker buildx
         uses: docker/setup-buildx-action@v2
 
@@ -36,6 +44,4 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/${{ inputs.image_repository }}:${{ inputs.commit_sha }}
-          labels: |
-            "org.opencontainers.image.description=Docker image ${{ inputs.image_repository}} built from commit SHA ${{ inputs.commit_sha }}."
-            "org.opencontainers.image.title=Docker image (${{ inputs.image_repository}}:${{ inputs.commit_sha }})."
+          labels: ${{ steps.meta.outputs.labels }}
