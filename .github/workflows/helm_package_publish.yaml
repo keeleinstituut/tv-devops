@@ -46,7 +46,7 @@ jobs:
       - name: Parse Helm package filename and save it
         run: |
           echo helm_package_file=\
-          $(echo ${{ env.helm_package_output }} | egrep -o '\b\S+\.tgz\b') \
+          $(echo ${{ env.helm_package_output }} | grep -P -o '(?<=\s)\S+\.tgz\b' \
           >> $GITHUB_ENV
 
 
