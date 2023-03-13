@@ -36,6 +36,6 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/${{ inputs.image_repository }}:${{ inputs.commit_sha }}
-          labels:
-            - org.opencontainers.image.description=Docker image ${{ inputs.image_repository}} built from commit SHA {{ inputs.commit_sha }}.
-            - org.opencontainers.image.title=Docker image (${{ inputs.image_repository}}:{{ inputs.commit_sha }}).
+          labels: |
+            org.opencontainers.image.description=Docker image ${{ inputs.image_repository}} built from commit SHA {{ inputs.commit_sha }}.
+            org.opencontainers.image.title=Docker image (${{ inputs.image_repository}}:{{ inputs.commit_sha }}).
