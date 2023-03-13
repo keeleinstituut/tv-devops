@@ -10,9 +10,6 @@ on:
       commit_sha:
         required: true
         type: string
-  push:
-    branches:
-      - feature/#116
 
 
 jobs:
