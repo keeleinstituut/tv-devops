@@ -6,7 +6,7 @@ on:
 
 
 jobs:
-  helm-upgrade:
+  helm_upgrade:
     runs-on: ubuntu-latest
 
     steps:

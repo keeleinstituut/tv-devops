@@ -6,7 +6,7 @@ on:
 
 
 jobs:
-  docker-build-and-push:
+  docker_build_and_push:
     runs-on: ubuntu-latest
     permissions:
       contents: read
