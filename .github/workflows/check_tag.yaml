@@ -46,6 +46,13 @@ jobs:
               echo "is_tag_semver=n" >> $GITHUB_OUTPUT
           fi
 
+      - name: debug
+        run: |
+          echo contained_in_main: ${{steps.check_main_branch.outputs.contained_in_main}};
+          echo is_tag_semver: ${{steps.check_tag_matches_semver.outputs.is_tag_semver}};
+          echo is_publishing_required: ${{ steps.check_main_branch.outputs.contained_in_main == 'y' && steps.check_tag_matches_semver.outputs.is_tag_semver == 'y' }}
+
+
     outputs:
       is_publishing_required: ${{ 
           steps.check_main_branch.outputs.contained_in_main == 'y' 
