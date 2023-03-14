@@ -28,7 +28,8 @@ jobs:
           ref: ${{ inputs.tag }}
           fetch-depth: 0
 
-      - name: check_main_branch
+      - id: check_main_branch
+        name: Check whether checked out ref is contained in main or master branch
         run: |
           if git branch --contains | grep -P '(?<!\S)(main|master)(?!\S)'
           then
@@ -37,7 +38,8 @@ jobs:
               echo "contained_in_main=n" >> $GITHUB_OUTPUT
           fi
 
-      - name: check_tag_matches_semver
+      - id: check_tag_matches_semver
+        name: Check whether supplied tag matches semver regex
         run: |
           if echo ${{ inputs.tag }} | grep -P '(?<!\S)\d+\.\d+\.\d+(?!\S)'
           then
