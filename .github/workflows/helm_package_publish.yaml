@@ -28,7 +28,7 @@ jobs:
       - name: Replace placeholders in "values.yaml" and "Chart.yaml"
         run: |
           sed -i \
-          -e s~__GIT_COMMIT_SHA__~${{ inputs.commit_sha }}~ \
+          -e s~__IMAGE_TAG__~${{ inputs.commit_sha }}~ \
           -e s~__IMAGE_REPOSITORY__~${{ inputs.image_repository }}~ \
           helm/values.yaml helm/Chart.yaml
 
