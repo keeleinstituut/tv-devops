@@ -54,7 +54,8 @@ jobs:
 
 
     outputs:
-      is_publishing_required: ${{ 
+      is_publishing_required: >-
+        ${{ 
           steps.check_main_branch.outputs.contained_in_main == 'y' 
           && 
           steps.check_tag_matches_semver.outputs.is_tag_semver == 'y' 
