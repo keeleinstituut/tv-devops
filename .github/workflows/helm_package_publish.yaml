@@ -29,7 +29,7 @@ jobs:
         run: |
           sed -i \
           -e s~__IMAGE_TAG__~${{ inputs.package_semver_tag }}~ \
-          -e s~__IMAGE_REPOSITORY__~${{ inputs.package_repository }}~ \
+          -e s~__IMAGE_REPOSITORY__~${{ inputs.package_repository }}-image~ \
           helm/values.yaml
 
       - name: Login to GHCR using Helm

@@ -35,4 +35,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ inputs.package_repository }}:${{ inputs.package_semver_tag }}
+          tags: ghcr.io/${{ inputs.package_repository }}-image:${{ inputs.package_semver_tag }}
