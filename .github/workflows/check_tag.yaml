@@ -28,23 +28,27 @@ jobs:
           ref: ${{ inputs.tag }}
           fetch-depth: 0
 
-      - name: check_commit_contained_in_main_branch
+      - name: check_main_branch
         run: |
-          if [ git branch --contains | grep -P '(?<!\S)(main|master)(?!\S)' ]
+          if [[ git branch --contains | grep -P '(?<!\S)(main|master)(?!\S)' ]]
           then
-              echo contained_in_main_branch=y >> $GITHUB_OUTPUT
+              echo "contained_in_main=y" >> $GITHUB_OUTPUT
           else
-              echo contained_in_main_branch=n >> $GITHUB_OUTPUT
+              echo "contained_in_main=n" >> $GITHUB_OUTPUT
           fi
 
       - name: check_tag_matches_semver
         run: |
-          if [ echo ${{ inputs.tag }} | grep -P '(?<!\S)\d+\.\d+\.\d+(?!\S)' ]
+          if [[ echo ${{ inputs.tag }} | grep -P '(?<!\S)\d+\.\d+\.\d+(?!\S)' ]]
           then
-              echo is_tag_semver=y >> $GITHUB_OUTPUT
+              echo "is_tag_semver=y" >> $GITHUB_OUTPUT
           else
-              echo is_tag_semver=n >> $GITHUB_OUTPUT
+              echo "is_tag_semver=n" >> $GITHUB_OUTPUT
           fi
 
     outputs:
-      is_publishing_required: ${{ env.contained_in_main_branch == 'y' && env.is_tag_semver == 'y' }}
+      is_publishing_required: ${{ 
+          steps.check_main_branch.outputs.contained_in_main == 'y' 
+          && 
+          steps.check_tag_matches_semver.outputs.is_tag_semver == 'y' 
+        }}
