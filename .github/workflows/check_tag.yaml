@@ -32,6 +32,9 @@ jobs:
         name: Check whether checked out ref is contained in main or master branch
         # TODO: Remove exception for continuous-delivery branch
         run: |
+          echo current ref is following branches: 
+          echo $(git branch --contains)
+          
           if git branch --contains | grep -P '(?<!\S)(main|master|feature/continuous-delivery)(?!\S)'
           then
               echo current ref ${{ inputs.tag }} is contained in main/master branch 
