@@ -28,11 +28,11 @@ jobs:
           ref: ${{ inputs.tag }}
           fetch-depth: 0
 
-      - id: check_main_branch
-        name: Check whether checked out ref is contained in main or master branch
+      - name: Check whether checked out ref is contained in main or master branch
+        id: check_main_branch
         # TODO: Remove exception for continuous-delivery branch
         run: |
-          if git merge-base --is-ancestor HEAD main || git merge-base --is-ancestor HEAD master || git merge-base --is-ancestor HEAD feature/continuous-delivery
+          if git merge-base --is-ancestor HEAD origin/main || git merge-base --is-ancestor HEAD origin/master || git merge-base --is-ancestor HEAD origin/feature/continuous-delivery
           then
               echo current ref ${{ inputs.tag }} is contained in main/master branch 
               echo "contained_in_main=y" >> $GITHUB_OUTPUT
@@ -41,8 +41,8 @@ jobs:
               echo "contained_in_main=n" >> $GITHUB_OUTPUT
           fi
 
-      - id: check_tag_matches_semver
-        name: Check whether supplied tag matches semver regex
+      - name: Check whether supplied tag matches semver regex
+        id: check_tag_matches_semver
         run: |
           if echo ${{ inputs.tag }} | grep -P '(?<!\S)\d+\.\d+\.\d+(?!\S)'
           then
