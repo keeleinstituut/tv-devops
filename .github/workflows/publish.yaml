@@ -1,0 +1,40 @@
+name: "Publishing pipeline: check tag for semver, publish Docker image, publish Helm chart"
+
+
+on:
+  workflow_call:
+    inputs:
+      repository:
+        required: true
+        type: string
+      tag:
+        required: true
+        type: string
+
+
+jobs:
+  check_tag:
+    uses: keeleinstituut/tv-devops/.github/workflows/check_tag.yaml@feature/#116 # TODO: remove @ref
+    with:
+      repository: ${{ inputs.repository }}
+      tag: ${{ inputs.tag }}
+
+  publish_docker_image:
+    if: ${{ needs.check_branch_and_tag.outputs.is_publishing_required }}
+    needs:
+      - check_branch_and_tag
+    uses: keeleinstituut/tv-devops/.github/workflows/docker_build_publish.yaml@feature/#116 # TODO: remove @ref
+    with:
+      package_repository: ${{ inputs.repository }}
+      package_semver_tag: ${{ inputs.tag }}
+
+  publish_helm_image:
+    if: ${{ needs.check_branch_and_tag.outputs.is_publishing_required }}
+    needs:
+      - publish_docker_image
+      - check_branch_and_tag
+    uses: keeleinstituut/tv-devops/.github/workflows/helm_package_publish.yaml@feature/#116 # TODO: remove @ref
+    with:
+      package_repository: ${{ inputs.repository }}
+      package_semver_tag: ${{ inputs.tag }}
+
