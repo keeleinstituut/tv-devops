@@ -45,5 +45,6 @@ jobs:
           else
               echo is_tag_semver=n >> $GITHUB_OUTPUT
           fi
+
     outputs:
       is_publishing_required: ${{ env.contained_in_main_branch == 'y' && env.is_tag_semver == 'y' }}
