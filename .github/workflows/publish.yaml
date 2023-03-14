@@ -48,6 +48,6 @@ jobs:
         run: |
           echo ${{ needs.check_tag.outputs.is_publishing_required }} &&\
           echo ${{ fromJSON(needs.check_tag.outputs.is_publishing_required) }} &&\
-          echo ${{ toJSON(needs) }}; &&\
+          echo ${{ needs }}; &&\
           exit 0
 

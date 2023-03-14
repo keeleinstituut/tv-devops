@@ -31,20 +31,28 @@ jobs:
       - id: check_main_branch
         name: Check whether checked out ref is contained in main or master branch
         run: |
+          echo $(git branch --contains);
+          
           if git branch --contains | grep -P '(?<!\S)(main|master)(?!\S)'
           then
-              echo "contained_in_main=y" >> $GITHUB_OUTPUT
+              echo current ref ${{ inputs.tag }} is contained in main/master branch 
+              echo "contained_in_main=y" >> $GITHUB_OUTPUT;
           else
+              echo current ref ${{ inputs.tag }} is NOT contained in main/master branch
               echo "contained_in_main=n" >> $GITHUB_OUTPUT
           fi
 
       - id: check_tag_matches_semver
         name: Check whether supplied tag matches semver regex
         run: |
+          echo ${{ inputs.tag }}
+          
           if echo ${{ inputs.tag }} | grep -P '(?<!\S)\d+\.\d+\.\d+(?!\S)'
           then
+              echo tag ${{ inputs.tag }} matches semver regex
               echo "is_tag_semver=y" >> $GITHUB_OUTPUT
           else
+              echo tag ${{ inputs.tag }} does NOT match semver regex
               echo "is_tag_semver=n" >> $GITHUB_OUTPUT
           fi
 
