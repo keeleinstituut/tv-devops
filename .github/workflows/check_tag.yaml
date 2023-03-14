@@ -39,7 +39,7 @@ jobs:
 
       - name: check_tag_matches_semver
         run: |
-          if [ echo ${{ inputs.tag }} | grep -P '(?<!\S)v\d+\.\d+\.\d+(?!\S)' ]
+          if [ echo ${{ inputs.tag }} | grep -P '(?<!\S)\d+\.\d+\.\d+(?!\S)' ]
           then
               echo is_tag_semver=y >> $GITHUB_OUTPUT
           else
