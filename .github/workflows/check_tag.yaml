@@ -13,7 +13,8 @@ on:
 
 
     outputs:
-      is_publishing_required: ${{ jobs.check_tag.outputs.is_publishing_required }}
+      is_publishing_required:
+        value: ${{ jobs.check_tag.outputs.is_publishing_required }}
 
 
 jobs:
