@@ -20,7 +20,7 @@ jobs:
       tag: ${{ inputs.tag }}
 
   publish_docker_image:
-    if: needs.check_tag.outputs.is_publishing_required
+    if: fromJSON(needs.check_tag.outputs.is_publishing_required)
     needs:
       - check_tag
     uses: keeleinstituut/tv-devops/.github/workflows/docker_build_publish.yaml@feature/#116 # TODO: remove @ref
@@ -29,7 +29,7 @@ jobs:
       package_semver_tag: ${{ inputs.tag }}
 
   publish_helm_image:
-    if: needs.check_tag.outputs.is_publishing_required
+    if: fromJSON(needs.check_tag.outputs.is_publishing_required)
     needs:
       - publish_docker_image
       - check_tag
