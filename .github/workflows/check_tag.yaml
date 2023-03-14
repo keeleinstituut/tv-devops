@@ -30,7 +30,7 @@ jobs:
 
       - name: check_main_branch
         run: |
-          if [[ git branch --contains | grep -P '(?<!\S)(main|master)(?!\S)' ]]
+          if git branch --contains | grep -P '(?<!\S)(main|master)(?!\S)'
           then
               echo "contained_in_main=y" >> $GITHUB_OUTPUT
           else
@@ -39,7 +39,7 @@ jobs:
 
       - name: check_tag_matches_semver
         run: |
-          if [[ echo ${{ inputs.tag }} | grep -P '(?<!\S)\d+\.\d+\.\d+(?!\S)' ]]
+          if echo ${{ inputs.tag }} | grep -P '(?<!\S)\d+\.\d+\.\d+(?!\S)'
           then
               echo "is_tag_semver=y" >> $GITHUB_OUTPUT
           else
