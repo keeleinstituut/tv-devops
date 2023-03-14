@@ -4,10 +4,10 @@ name: Build and publish a Helm chart (located in /helm folder) into the GitHub C
 on:
   workflow_call:
     inputs:
-      image_repository:
+      package_repository:
         required: true
         type: string
-      commit_sha:
+      package_semver_tag:
         required: true
         type: string
 
@@ -28,19 +28,21 @@ jobs:
       - name: Replace placeholders in "values.yaml" and "Chart.yaml"
         run: |
           sed -i \
-          -e s~__IMAGE_TAG__~${{ inputs.commit_sha }}~ \
-          -e s~__IMAGE_REPOSITORY__~${{ inputs.image_repository }}~ \
-          helm/values.yaml helm/Chart.yaml
+          -e s~__IMAGE_TAG__~${{ inputs.package_semver_tag }}~ \
+          -e s~__IMAGE_REPOSITORY__~${{ inputs.package_repository }}~ \
+          helm/values.yaml
 
       - name: Login to GHCR using Helm
         run: |
           echo ${{ secrets.GITHUB_TOKEN }} | \
-          helm registry login -u ghcr.io --password-stdin ghcr.io
+          helm registry login -u ${{ github.repository_owner }} --password-stdin ghcr.io
 
       - name: Package Helm chart and save command output
         run: |
           echo helm_package_output=\
-          $(helm package --dependency-update helm) \
+          $(helm package helm --dependency-update \
+          --version ${{ inputs.package_semver_tag }} \
+          --app-version ${{ inputs.package_semver_tag }}) \
           >> $GITHUB_ENV
 
       - name: Parse Helm package filename and save it

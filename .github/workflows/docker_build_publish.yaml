@@ -4,10 +4,10 @@ name: Build and publish a Docker image (based on /Dockerfile) into the GitHub Co
 on:
   workflow_call:
     inputs:
-      image_repository:
+      package_repository:
         required: true
         type: string
-      commit_sha:
+      package_semver_tag:
         required: true
         type: string
 
@@ -35,4 +35,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ inputs.image_repository }}:${{ inputs.commit_sha }}
+          tags: ghcr.io/${{ inputs.package_repository }}:${{ inputs.package_semver_tag }}
