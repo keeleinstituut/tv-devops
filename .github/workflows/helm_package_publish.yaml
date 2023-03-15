@@ -59,7 +59,7 @@ jobs:
 
       - name: Login to GHCR using Helm
         run: |
-          helm registry logout
+          helm registry logout ghcr.io
           echo ${{ secrets.GITHUB_TOKEN }} | \
           helm registry login -u ghcr.io --password-stdin ghcr.io
 
