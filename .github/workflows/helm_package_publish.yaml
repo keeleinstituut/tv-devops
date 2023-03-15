@@ -43,11 +43,6 @@ jobs:
           -e "s~__IMAGE_REPOSITORY__~$GITHUB_ORGANIZATION/docker/$APP_NAME~" \
           helm/values.yaml
 
-      - name: Login to GHCR using Helm
-        run: |
-          echo ${{ secrets.GITHUB_TOKEN }} | \
-          helm registry login -u "$GITHUB_ORGANIZATION" --password-stdin ghcr.io
-
       - name: Package Helm chart and save command output
         run: |
           echo HELM_PACKAGE_OUTPUT=\
@@ -62,6 +57,10 @@ jobs:
           $(echo "$HELM_PACKAGE_OUTPUT" | grep -P -o '(?<=\s)\S+\.tgz\b') \
           >> $GITHUB_ENV
 
+      - name: Login to GHCR using Helm
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | \
+          helm registry login -u "$GITHUB_ORGANIZATION" --password-stdin ghcr.io
 
       - name: Publish Helm chart to GHCR
         run: |

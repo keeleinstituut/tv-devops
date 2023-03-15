@@ -1,4 +1,4 @@
-name: "Publishing pipeline: check tag for semver, publish Docker image, publish Helm chart"
+name: "Publishing pipeline: check tag for semver, and if necessary, publish Docker image, publish Helm chart"
 
 
 on:
