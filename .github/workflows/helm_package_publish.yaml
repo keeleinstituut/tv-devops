@@ -59,9 +59,8 @@ jobs:
 
       - name: Login to GHCR using Helm
         run: |
-          helm registry logout ghcr.io
           echo ${{ secrets.GITHUB_TOKEN }} | \
-          helm registry login -u ghcr.io --password-stdin ghcr.io
+          helm registry login -u "$GITHUB_ORGANIZATION" --password-stdin ghcr.io
 
       - name: Publish Helm chart to GHCR
         run: |
