@@ -4,10 +4,7 @@ name: Check given tag matches semver pattern and is contained in main/master bra
 on:
   workflow_call:
     inputs:
-      repository:
-        required: true
-        type: string
-      tag:
+      git_tag:
         required: true
         type: string
 
@@ -19,13 +16,19 @@ on:
 
 jobs:
   check_tag:
+    env:
+      # Use inputs as environement variables instead of GitHub expressions in inline scripts.
+      # This is a measure to protect against script injection.
+      # See https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable.
+      GIT_TAG: ${{ inputs.git_tag }}
+
     runs-on: ubuntu-latest
+
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
         with:
-          repository: ${{ inputs.repository }}
-          ref: ${{ inputs.tag }}
+          ref: ${{ inputs.git_tag }}
           fetch-depth: 0
 
       - name: Check whether checked out ref is contained in main or master branch
@@ -34,22 +37,22 @@ jobs:
         run: |
           if git merge-base --is-ancestor HEAD origin/main || git merge-base --is-ancestor HEAD origin/master || git merge-base --is-ancestor HEAD origin/feature/continuous-delivery
           then
-              echo current ref ${{ inputs.tag }} is contained in main/master branch 
+              echo "current ref $GIT_TAG is contained in main/master branch" 
               echo "contained_in_main=y" >> $GITHUB_OUTPUT
           else
-              echo current ref ${{ inputs.tag }} is NOT contained in main/master branch
+              echo "current ref $GIT_TAG is NOT contained in main/master branch"
               echo "contained_in_main=n" >> $GITHUB_OUTPUT
           fi
 
       - name: Check whether supplied tag matches semver regex
         id: check_tag_matches_semver
         run: |
-          if echo ${{ inputs.tag }} | grep -P '(?<!\S)\d+\.\d+\.\d+(?!\S)'
+          if echo "$GIT_TAG" | grep -P '(?<!\S)\d+\.\d+\.\d+(?!\S)'
           then
-              echo tag ${{ inputs.tag }} matches semver regex
+              echo "tag $GIT_TAG matches semver regex"
               echo "is_tag_semver=y" >> $GITHUB_OUTPUT
           else
-              echo tag ${{ inputs.tag }} does NOT match semver regex
+              echo "tag $GIT_TAG does NOT match semver regex"
               echo "is_tag_semver=n" >> $GITHUB_OUTPUT
           fi
 

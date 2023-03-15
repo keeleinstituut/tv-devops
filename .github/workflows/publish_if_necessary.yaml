@@ -4,10 +4,13 @@ name: "Publishing pipeline: check tag for semver, publish Docker image, publish 
 on:
   workflow_call:
     inputs:
-      repository:
+      github_organization:
         required: true
         type: string
-      tag:
+      app_name:
+        required: true
+        type: string
+      git_tag:
         required: true
         type: string
 
@@ -16,8 +19,7 @@ jobs:
   check_tag:
     uses: keeleinstituut/tv-devops/.github/workflows/check_tag.yaml@feature/#116 # TODO: remove @ref
     with:
-      repository: ${{ inputs.repository }}
-      tag: ${{ inputs.tag }}
+      git_tag: ${{ inputs.git_tag }}
 
   publish_docker_image:
     if: fromJSON(needs.check_tag.outputs.is_publishing_required)
@@ -25,18 +27,20 @@ jobs:
       - check_tag
     uses: keeleinstituut/tv-devops/.github/workflows/docker_build_publish.yaml@feature/#116 # TODO: remove @ref
     with:
-      package_repository: ${{ inputs.repository }}
-      package_semver_tag: ${{ inputs.tag }}
+      github_organization: ${{ inputs.github_organization }}
+      app_name:  ${{ inputs.app_name }}
+      package_semver_tag: ${{ inputs.git_tag }}
 
   publish_helm_image:
     if: fromJSON(needs.check_tag.outputs.is_publishing_required)
     needs:
-      - publish_docker_image
       - check_tag
+      - publish_docker_image
     uses: keeleinstituut/tv-devops/.github/workflows/helm_package_publish.yaml@feature/#116 # TODO: remove @ref
     with:
-      package_repository: ${{ inputs.repository }}
-      package_semver_tag: ${{ inputs.tag }}
+      github_organization: ${{ inputs.github_organization }}
+      app_name:  ${{ inputs.app_name }}
+      package_semver_tag: ${{ inputs.git_tag }}
 
   debug: # TODO: remove
     if: needs.check_tag.outputs.is_publishing_required
