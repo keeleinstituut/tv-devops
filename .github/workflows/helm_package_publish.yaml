@@ -40,7 +40,7 @@ jobs:
         run: |
           sed -i \
           -e "s~__IMAGE_TAG__~$PACKAGE_SEMVER_TAG~" \
-          -e "s~__IMAGE_REPOSITORY__~$GITHUB_ORGANIZATION/docker/$APP_NAME~" \
+          -e "s~__IMAGE_REPOSITORY__~ghcr.io/$GITHUB_ORGANIZATION/docker/$APP_NAME~" \
           helm/values.yaml
 
       - name: Package Helm chart and save command output
