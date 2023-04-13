@@ -1,0 +1,67 @@
+name: Package and publish a Helm chart (located in /helm folder) into the GitHub Container Registry
+
+
+on:
+  workflow_call:
+    inputs:
+      github_organization:
+        required: true
+        type: string
+      app_name:
+        required: true
+        type: string
+      package_semver_tag:
+        required: true
+        type: string
+
+
+jobs:
+  helm_package_and_publish:
+    env:
+      # Use inputs as environement variables instead of GitHub expressions in inline scripts.
+      # This is a measure to protect against script injection.
+      # See https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable.
+      GITHUB_ORGANIZATION: ${{ inputs.github_organization }}
+      APP_NAME: ${{ inputs.app_name }}
+      PACKAGE_SEMVER_TAG: ${{ inputs.package_semver_tag }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install Helm in container
+        uses: Azure/setup-helm@v3
+        with:
+          version: v3.11.1
+
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Replace placeholders in "values.yaml" and "Chart.yaml"
+        run: |
+          sed -i \
+          -e "s~__IMAGE_TAG__~$PACKAGE_SEMVER_TAG~" \
+          -e "s~__IMAGE_REPOSITORY__~$GITHUB_ORGANIZATION/docker/$APP_NAME~" \
+          helm/values.yaml
+
+      - name: Package Helm chart and save command output
+        run: |
+          echo HELM_PACKAGE_OUTPUT=\
+          $(helm package helm --dependency-update \
+          --version "$PACKAGE_SEMVER_TAG" \
+          --app-version "$PACKAGE_SEMVER_TAG") \
+          >> $GITHUB_ENV
+
+      - name: Parse Helm package filename and save it
+        run: |
+          echo HELM_PACKAGE_FILE=\
+          $(echo "$HELM_PACKAGE_OUTPUT" | grep -P -o '(?<=\s)\S+\.tgz\b') \
+          >> $GITHUB_ENV
+
+      - name: Login to GHCR using Helm
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | \
+          helm registry login -u "$GITHUB_ORGANIZATION" --password-stdin ghcr.io
+
+      - name: Publish Helm chart to GHCR
+        run: |
+          helm push "$HELM_PACKAGE_FILE" "oci://ghcr.io/$GITHUB_ORGANIZATION/helm"
