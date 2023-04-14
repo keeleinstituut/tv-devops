@@ -31,16 +31,16 @@ jobs:
           ref: ${{ inputs.git_tag }}
           fetch-depth: 0
 
-      - name: Check whether checked out ref is contained in main or master branch
+      - name: Check whether checked out ref is contained in allowed branches
         id: check_main_branch
         # TODO: Remove exception for continuous-delivery branch
         run: |
           if git merge-base --is-ancestor HEAD origin/main || git merge-base --is-ancestor HEAD origin/master || git merge-base --is-ancestor HEAD origin/staging
           then
-              echo "current ref $GIT_TAG is contained in main/master branch" 
+              echo "current ref $GIT_TAG is contained in allowed branches"
               echo "contained_in_main=y" >> $GITHUB_OUTPUT
           else
-              echo "current ref $GIT_TAG is NOT contained in main/master branch"
+              echo "current ref $GIT_TAG is NOT contained in allowed branches"
               echo "contained_in_main=n" >> $GITHUB_OUTPUT
           fi
 
@@ -58,8 +58,8 @@ jobs:
 
     outputs:
       is_publishing_required: >-
-        ${{ 
-          steps.check_main_branch.outputs.contained_in_main == 'y' 
-          && 
-          steps.check_tag_matches_semver.outputs.is_tag_semver == 'y' 
+        ${{
+          steps.check_main_branch.outputs.contained_in_main == 'y'
+          &&
+          steps.check_tag_matches_semver.outputs.is_tag_semver == 'y'
         }}
