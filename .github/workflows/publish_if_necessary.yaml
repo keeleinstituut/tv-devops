@@ -21,6 +21,10 @@ on:
         type: string
         required: false
         default: .
+      helm_chart_path:
+        type: string
+        required: false
+        default: ./helm
 
 
 jobs:
@@ -51,3 +55,4 @@ jobs:
       github_organization: ${{ inputs.github_organization }}
       app_name:  ${{ inputs.app_name }}
       package_semver_tag: ${{ inputs.git_tag }}
+      helm_chart_path: ${{ inputs.helm_chart_path }}
