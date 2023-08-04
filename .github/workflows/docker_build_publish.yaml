@@ -13,6 +13,12 @@ on:
       package_semver_tag:
         required: true
         type: string
+      dockerfile_path:
+        required: true
+        type: string
+      docker_context_path:
+        required: true
+        type: string
 
 
 jobs:
@@ -36,6 +42,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
-          context: .
+          context: ${{ inputs.docker_context_path }}
+          file: ${{ inputs.dockerfile_path }}
           push: true
           tags: ghcr.io/${{ inputs.github_organization }}/docker/${{ inputs.app_name }}:${{ inputs.package_semver_tag }}

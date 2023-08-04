@@ -13,6 +13,14 @@ on:
       git_tag:
         required: true
         type: string
+      dockerfile_path:
+        type: string
+        required: false
+        default: ./Dockerfile
+      docker_context_path:
+        type: string
+        required: false
+        default: .
 
 
 jobs:
@@ -30,6 +38,8 @@ jobs:
       github_organization: ${{ inputs.github_organization }}
       app_name:  ${{ inputs.app_name }}
       package_semver_tag: ${{ inputs.git_tag }}
+      dockerfile_path:  ${{ inputs.dockerfile_path }}
+      docker_context_path: ${{ inputs.docker_context_path }}
 
   publish_helm_image:
     if: fromJSON(needs.check_tag.outputs.is_publishing_required)
