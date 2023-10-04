@@ -13,6 +13,9 @@ on:
       package_semver_tag:
         required: true
         type: string
+      helm_chart_path:
+        required: true
+        type: string
 
 
 jobs:
@@ -24,6 +27,7 @@ jobs:
       GITHUB_ORGANIZATION: ${{ inputs.github_organization }}
       APP_NAME: ${{ inputs.app_name }}
       PACKAGE_SEMVER_TAG: ${{ inputs.package_semver_tag }}
+      HELM_CHART_PATH: ${{ inputs.helm_chart_path }}
 
     runs-on: ubuntu-latest
 
@@ -41,12 +45,12 @@ jobs:
           sed -i \
           -e "s~__IMAGE_TAG__~$PACKAGE_SEMVER_TAG~" \
           -e "s~__IMAGE_REPOSITORY__~ghcr.io/$GITHUB_ORGANIZATION/docker/$APP_NAME~" \
-          helm/values.yaml
+          "$HELM_CHART_PATH/values.yaml"
 
       - name: Package Helm chart and save command output
         run: |
           echo HELM_PACKAGE_OUTPUT=\
-          $(helm package helm --dependency-update \
+          $(helm package "$HELM_CHART_PATH" --dependency-update \
           --version "$PACKAGE_SEMVER_TAG" \
           --app-version "$PACKAGE_SEMVER_TAG") \
           >> $GITHUB_ENV
