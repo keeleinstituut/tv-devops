@@ -35,7 +35,7 @@ jobs:
         id: check_main_branch
         # TODO: Remove exception for continuous-delivery branch
         run: |
-          if git merge-base --is-ancestor HEAD origin/main || git merge-base --is-ancestor HEAD origin/master || git merge-base --is-ancestor HEAD origin/staging
+          if git merge-base --is-ancestor HEAD origin/main || git merge-base --is-ancestor HEAD origin/master || git merge-base --is-ancestor HEAD origin/staging || git merge-base --is-ancestor HEAD origin/temporary
           then
               echo "current ref $GIT_TAG is contained in allowed branches"
               echo "contained_in_main=y" >> $GITHUB_OUTPUT
