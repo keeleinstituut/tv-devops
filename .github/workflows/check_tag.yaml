@@ -32,22 +32,24 @@ jobs:
           fetch-depth: 0
 
       - name: Check whether checked out ref is contained in allowed branches
-        id: check_main_branch
+        id: check_is_allowed_branch
         # TODO: Remove exception for continuous-delivery branch
+        # run: |
+        #   if git merge-base --is-ancestor HEAD origin/main || git merge-base --is-ancestor HEAD origin/master || git merge-base --is-ancestor HEAD origin/staging || git merge-base --is-ancestor HEAD origin/temporary
+        #   then
+        #       echo "current ref $GIT_TAG is contained in allowed branches"
+        #       echo "is_allowed_branch=y" >> $GITHUB_OUTPUT
+        #   else
+        #       echo "current ref $GIT_TAG is NOT contained in allowed branches"
+        #       echo "is_allowed_branch=n" >> $GITHUB_OUTPUT
+        #   fi
         run: |
-          if git merge-base --is-ancestor HEAD origin/main || git merge-base --is-ancestor HEAD origin/master || git merge-base --is-ancestor HEAD origin/staging
-          then
-              echo "current ref $GIT_TAG is contained in allowed branches"
-              echo "contained_in_main=y" >> $GITHUB_OUTPUT
-          else
-              echo "current ref $GIT_TAG is NOT contained in allowed branches"
-              echo "contained_in_main=n" >> $GITHUB_OUTPUT
-          fi
+          echo "is_allowed_branch=y" >> $GITHUB_OUTPUT
 
       - name: Check whether supplied tag matches semver regex
         id: check_tag_matches_semver
         run: |
-          if echo "$GIT_TAG" | grep -P '(?<!\S)\d+\.\d+\.\d+(?!\S)'
+          if echo "$GIT_TAG" | grep -P '(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?'
           then
               echo "tag $GIT_TAG matches semver regex"
               echo "is_tag_semver=y" >> $GITHUB_OUTPUT
@@ -59,7 +61,7 @@ jobs:
     outputs:
       is_publishing_required: >-
         ${{
-          steps.check_main_branch.outputs.contained_in_main == 'y'
+          steps.check_is_allowed_branch.outputs.is_allowed_branch == 'y'
           &&
           steps.check_tag_matches_semver.outputs.is_tag_semver == 'y'
         }}
